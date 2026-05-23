@@ -135,36 +135,60 @@ if (isMobile) {
   );
 }
 
-let touchStartX = 0;
-let touchStartY = 0;
+let activeLookTouchId = null;
+let lookTouchX = 0;
+let lookTouchY = 0;
+
+function isInteractiveOverlay(target) {
+  return Boolean(
+    target.closest?.(".joystick-control") ||
+    target.closest?.("#artwork-info") ||
+    target.closest?.("button") ||
+    target.closest?.("a"),
+  );
+}
+
+function getTouchById(touches, id) {
+  return Array.from(touches).find((touch) => touch.identifier === id);
+}
 
 function handleTouchStart(event) {
-  touchStartX = event.touches[0].clientX;
-  touchStartY = event.touches[0].clientY;
+  if (!isMobile) return;
+  if (activeLookTouchId !== null) return;
+  if (isInteractiveOverlay(event.target)) return;
+
+  const touch = event.changedTouches[0];
+  activeLookTouchId = touch.identifier;
+  lookTouchX = touch.clientX;
+  lookTouchY = touch.clientY;
 }
 
 function handleTouchMove(event) {
-  if (!touchStartX || !touchStartY) {
-    return;
-  }
+  if (!isMobile || activeLookTouchId === null) return;
 
-  let touchEndX = event.touches[0].clientX;
-  let touchEndY = event.touches[0].clientY;
+  const touch = getTouchById(event.touches, activeLookTouchId);
+  if (!touch) return;
 
-  let dx = touchEndX - touchStartX;
-  let dy = touchEndY - touchStartY;
+  const dx = touch.clientX - lookTouchX;
+  const dy = touch.clientY - lookTouchY;
 
-  // Adjust camera rotation based on touch movement
-  camera.rotation.y += dx * 0.003;
-  camera.rotation.x -= dy * 0.003;
+  // Roblox-style mobile look: drag right turns right, drag left turns left.
+  camera.rotation.y += dx * 0.0024;
+  camera.rotation.x -= dy * 0.0024;
 
-  touchStartX = touchEndX;
-  touchStartY = touchEndY;
+  lookTouchX = touch.clientX;
+  lookTouchY = touch.clientY;
 }
 
-function handleTouchEnd() {
-  touchStartX = 0;
-  touchStartY = 0;
+function handleTouchEnd(event) {
+  if (activeLookTouchId === null) return;
+
+  const endedLookTouch = getTouchById(event.changedTouches, activeLookTouchId);
+  if (!endedLookTouch) return;
+
+  activeLookTouchId = null;
+  lookTouchX = 0;
+  lookTouchY = 0;
 }
 
 // Initialize components
@@ -179,9 +203,18 @@ if (isMobile) {
   });
 
   // Look controls (already defined)
-  document.body.addEventListener("touchstart", handleTouchStart);
-  document.body.addEventListener("touchmove", handleTouchMove);
-  document.body.addEventListener("touchend", handleTouchEnd);
+  document.body.addEventListener("touchstart", handleTouchStart, {
+    passive: false,
+  });
+  document.body.addEventListener("touchmove", handleTouchMove, {
+    passive: false,
+  });
+  document.body.addEventListener("touchend", handleTouchEnd, {
+    passive: false,
+  });
+  document.body.addEventListener("touchcancel", handleTouchEnd, {
+    passive: false,
+  });
 
   // Add a simple virtual joystick
 
@@ -200,6 +233,21 @@ if (isMobile) {
   joystick.style.touchAction = "none";
   joystick.style.zIndex = "9999";
   joystick.style.pointerEvents = "auto";
+
+  const joystickThumb = document.createElement("div");
+  joystickThumb.style.position = "absolute";
+  joystickThumb.style.top = "50%";
+  joystickThumb.style.left = "50%";
+  joystickThumb.style.width = "34px";
+  joystickThumb.style.height = "34px";
+  joystickThumb.style.transform = "translate(-50%, -50%)";
+  joystickThumb.style.borderRadius = "50%";
+  joystickThumb.style.background = "rgba(255,255,255,0.42)";
+  joystickThumb.style.border = "1px solid rgba(255,255,255,0.68)";
+  joystickThumb.style.boxShadow = "0 0 14px rgba(255,255,255,0.35)";
+  joystickThumb.style.pointerEvents = "none";
+  joystick.appendChild(joystickThumb);
+
   document.body.appendChild(joystick);
 
   console.log("Touch movement orb enabled", {
@@ -213,27 +261,76 @@ if (isMobile) {
   let moveX = 0,
     moveY = 0;
 
-  joystick.addEventListener("touchstart", (e) => {
-    joystickActive = true;
-    const touch = e.touches[0];
-    joystick.dataset.startX = touch.clientX;
-    joystick.dataset.startY = touch.clientY;
-  });
+  joystick.addEventListener(
+    "touchstart",
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      joystickActive = true;
+      const touch = e.changedTouches[0];
+      joystick.dataset.touchId = touch.identifier;
+      joystick.dataset.startX = touch.clientX;
+      joystick.dataset.startY = touch.clientY;
+      joystickThumb.style.transform = "translate(-50%, -50%) scale(1.08)";
+    },
+    { passive: false },
+  );
 
-  joystick.addEventListener("touchmove", (e) => {
-    if (!joystickActive) return;
-    const touch = e.touches[0];
-    const dx = touch.clientX - joystick.dataset.startX;
-    const dy = touch.clientY - joystick.dataset.startY;
-    moveX = Math.max(-0.65, Math.min(0.65, dx / 70));
-    moveY = Math.max(-0.65, Math.min(0.65, dy / 70));
-  });
+  joystick.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!joystickActive) return;
+      e.preventDefault();
+      e.stopPropagation();
 
-  joystick.addEventListener("touchend", () => {
+      const joystickTouchId = Number(joystick.dataset.touchId);
+      const touch = getTouchById(e.touches, joystickTouchId);
+      if (!touch) return;
+
+      const dx = touch.clientX - Number(joystick.dataset.startX);
+      const dy = touch.clientY - Number(joystick.dataset.startY);
+      const clampedX = Math.max(-45, Math.min(45, dx));
+      const clampedY = Math.max(-45, Math.min(45, dy));
+
+      moveX = Math.max(-0.65, Math.min(0.65, dx / 70));
+      moveY = Math.max(-0.65, Math.min(0.65, dy / 70));
+      joystickThumb.style.transform = `translate(calc(-50% + ${clampedX}px), calc(-50% + ${clampedY}px))`;
+    },
+    { passive: false },
+  );
+
+  function resetJoystick() {
     joystickActive = false;
     moveX = 0;
     moveY = 0;
-  });
+    joystick.dataset.touchId = "";
+    joystickThumb.style.transform = "translate(-50%, -50%)";
+  }
+
+  joystick.addEventListener(
+    "touchend",
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const joystickTouchId = Number(joystick.dataset.touchId);
+      const endedJoystickTouch = getTouchById(
+        e.changedTouches,
+        joystickTouchId,
+      );
+      if (endedJoystickTouch) resetJoystick();
+    },
+    { passive: false },
+  );
+
+  joystick.addEventListener(
+    "touchcancel",
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      resetJoystick();
+    },
+    { passive: false },
+  );
 
   // Override animate() movement for mobile
   const originalAnimate = animate;
