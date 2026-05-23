@@ -665,6 +665,8 @@ canvas {
   backdrop-filter: blur(18px) !important;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22) !important;
   z-index: 1000 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
 }
 
 #artwork-info::before {
@@ -688,34 +690,25 @@ canvas {
 @media (max-width: 768px) {
   #artwork-info {
     left: auto !important;
-
     right: 14px !important;
-
     bottom: 120px !important;
-
-    max-width: 230px !important;
-
+    max-width: 300px !important;
     width: auto !important;
-
-    padding: 10px 12px !important;
+    padding: 12px 14px !important;
   }
 
   #artwork-description {
     display: -webkit-box !important;
-
-    -webkit-line-clamp: 2;
-
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-
     overflow: hidden !important;
-
-    font-size: 0.95rem !important;
-
-    line-height: 1.35 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.4 !important;
+    min-height: 3.8em;
+    word-break: break-word;
   }
   #artwork-info.expanded #artwork-description {
     -webkit-line-clamp: unset;
-
     overflow: visible !important;
   }
 }

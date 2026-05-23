@@ -225,8 +225,8 @@ if (isMobile) {
     const touch = e.touches[0];
     const dx = touch.clientX - joystick.dataset.startX;
     const dy = touch.clientY - joystick.dataset.startY;
-    moveX = Math.max(-1, Math.min(1, dx / 40));
-    moveY = Math.max(-1, Math.min(1, dy / 40));
+    moveX = Math.max(-0.65, Math.min(0.65, dx / 70));
+    moveY = Math.max(-0.65, Math.min(0.65, dy / 70));
   });
 
   joystick.addEventListener("touchend", () => {
@@ -242,7 +242,7 @@ if (isMobile) {
     const delta = clock.getDelta();
 
     if (joystickActive) {
-      const moveSpeed = 5 * delta;
+      const moveSpeed = 2.2 * delta;
 
       // Move relative to the camera's facing direction (natural control)
       const forward = new THREE.Vector3();
@@ -254,21 +254,36 @@ if (isMobile) {
       right.crossVectors(camera.up, forward).normalize();
 
       // Use joystick input to move in facing direction
-      camera.position.addScaledVector(forward, -moveY * moveSpeed);
-      camera.position.addScaledVector(right, moveX * moveSpeed);
+      const nextPosition = camera.position.clone();
+      nextPosition.addScaledVector(forward, -moveY * moveSpeed);
+      nextPosition.addScaledVector(right, moveX * moveSpeed);
+
+      const roomWidth = 20;
+      const roomLength = 20;
+      const wallBuffer = 2.8;
+
+      const isInsideSafeGalleryArea =
+        nextPosition.x > -roomWidth / 2 + wallBuffer &&
+        nextPosition.x < roomWidth / 2 - wallBuffer &&
+        nextPosition.z > -roomLength / 2 + wallBuffer &&
+        nextPosition.z < roomLength / 2 - wallBuffer;
+
+      if (isInsideSafeGalleryArea) {
+        camera.position.copy(nextPosition);
+      }
     }
 
-    // Clamp camera inside room
-    const margin = 0.5;
+    // Clamp camera inside a comfortable walking area, before reaching the walls
+    const wallBuffer = 2.8;
     const roomWidth = 20;
     const roomLength = 20;
     camera.position.x = Math.min(
-      Math.max(camera.position.x, -roomWidth / 2 + margin),
-      roomWidth / 2 - margin,
+      Math.max(camera.position.x, -roomWidth / 2 + wallBuffer),
+      roomWidth / 2 - wallBuffer,
     );
     camera.position.z = Math.min(
-      Math.max(camera.position.z, -roomLength / 2 + margin),
-      roomLength / 2 - margin,
+      Math.max(camera.position.z, -roomLength / 2 + wallBuffer),
+      roomLength / 2 - wallBuffer,
     );
 
     // ✅ Prevent over-tilting on mobile too
@@ -311,17 +326,17 @@ function animate() {
     controls.moveRight(-velocity.x * delta);
     controls.moveForward(-velocity.z * delta);
 
-    // Keep within room boundaries
-    const margin = 0.5; // Distance from walls
+    // Keep within a comfortable walking area, before reaching the walls
+    const wallBuffer = 2.8;
     const roomWidth = 20;
-    if (camera.position.x < -roomWidth / 2 + margin)
-      camera.position.x = -roomWidth / 2 + margin;
-    if (camera.position.x > roomWidth / 2 - margin)
-      camera.position.x = roomWidth / 2 - margin;
-    if (camera.position.z < -roomLength / 2 + margin)
-      camera.position.z = -roomLength / 2 + margin;
-    if (camera.position.z > roomLength / 2 - margin)
-      camera.position.z = roomLength / 2 - margin;
+    if (camera.position.x < -roomWidth / 2 + wallBuffer)
+      camera.position.x = -roomWidth / 2 + wallBuffer;
+    if (camera.position.x > roomWidth / 2 - wallBuffer)
+      camera.position.x = roomWidth / 2 - wallBuffer;
+    if (camera.position.z < -roomLength / 2 + wallBuffer)
+      camera.position.z = -roomLength / 2 + wallBuffer;
+    if (camera.position.z > roomLength / 2 - wallBuffer)
+      camera.position.z = roomLength / 2 - wallBuffer;
   }
 
   // ✅ Clamp camera pitch so it can’t spin to the ceiling/floor
