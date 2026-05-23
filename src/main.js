@@ -42,11 +42,26 @@ function setupSpawnReference(scene, camera, isMobile) {
   }
 }
 
-// Mobile detection
+// Touch / tablet detection
+// iPads often identify as desktop browsers, especially in landscape or desktop-mode Safari.
+// For this gallery, any touch-capable device should receive the mobile movement orb.
 function isMobileDevice() {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent,
-  );
+  const userAgent = navigator.userAgent || "";
+  const isTraditionalMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      userAgent,
+    );
+
+  const isTouchCapable =
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0;
+
+  const prefersTouch =
+    window.matchMedia?.("(pointer: coarse)")?.matches ||
+    window.matchMedia?.("(hover: none)")?.matches;
+
+  return isTraditionalMobile || isTouchCapable || prefersTouch;
 }
 
 const isMobile = isMobileDevice();
@@ -140,8 +155,8 @@ function handleTouchMove(event) {
   let dy = touchEndY - touchStartY;
 
   // Adjust camera rotation based on touch movement
-  camera.rotation.y += dx * 0.005;
-  camera.rotation.x += dy * 0.005;
+  camera.rotation.y += dx * 0.003;
+  camera.rotation.x -= dy * 0.003;
 
   touchStartX = touchEndX;
   touchStartY = touchEndY;
@@ -173,17 +188,26 @@ if (isMobile) {
   const joystick = document.createElement("div");
   joystick.className = "joystick-control";
 
-  joystick.style.position = "absolute";
-  joystick.style.bottom = "100px";
-  joystick.style.left = "40px";
-  joystick.style.width = "100px";
-  joystick.style.height = "100px";
+  joystick.style.position = "fixed";
+  joystick.style.bottom = "calc(90px + env(safe-area-inset-bottom, 0px))";
+  joystick.style.left = "calc(40px + env(safe-area-inset-left, 0px))";
+  joystick.style.width = "110px";
+  joystick.style.height = "110px";
   joystick.style.borderRadius = "50%";
-  joystick.style.background = "rgba(255,255,255,0.1)";
-  joystick.style.border = "2px solid rgba(255,255,255,0.3)";
+  joystick.style.background = "rgba(255,255,255,0.18)";
+  joystick.style.border = "2px solid rgba(255,255,255,0.45)";
+  joystick.style.boxShadow = "0 0 22px rgba(255,255,255,0.25)";
   joystick.style.touchAction = "none";
-  joystick.style.zIndex = "999";
+  joystick.style.zIndex = "9999";
+  joystick.style.pointerEvents = "auto";
   document.body.appendChild(joystick);
+
+  console.log("Touch movement orb enabled", {
+    userAgent: navigator.userAgent,
+    maxTouchPoints: navigator.maxTouchPoints,
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
   let joystickActive = false;
   let moveX = 0,
