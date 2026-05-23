@@ -21,11 +21,21 @@ export class ArtworkManager {
 
     // Proximity detection
     this.proximityDistance = 5; // Distance at which artwork info appears
-    this.infoPanel.addEventListener("click", () => {
+    const toggleExpandedInfoPanel = (event) => {
+      event.stopPropagation();
+
       if (window.innerWidth <= 768) {
         this.infoPanel.classList.toggle("expanded");
       }
-    });
+    };
+
+    this.infoPanel.addEventListener(
+      "touchstart",
+
+      toggleExpandedInfoPanel,
+
+      { passive: true },
+    );
   }
 
   // Add a new artwork to the collection
@@ -286,17 +296,24 @@ export class ArtworkManager {
 
   // Show artwork information panel
   showArtworkInfo(info) {
-    this.artworkTitle.style.display = "none";
+    if (!info || !this.infoPanel || !this.artworkDescription) return;
+
+    if (this.artworkTitle) {
+      this.artworkTitle.style.display = "none";
+    }
 
     if (this.artworkArtist) {
       this.artworkArtist.style.display = "none";
-      this.artworkDescription.textContent = info.description;
-    } else {
-      this.artworkDescription.innerHTML = `
-        <div class="artwork-artist">By ${info.artist}</div>
-        <div class="artwork-description-text">${info.description}</div>
-      `;
     }
+
+    this.artworkDescription.textContent =
+      info.description || "A quiet reflection within the gallery.";
+
+    this.artworkDescription.style.display = "block";
+
+    this.artworkDescription.style.opacity = "1";
+
+    this.artworkDescription.style.visibility = "visible";
 
     this.infoPanel.style.display = "block";
   }
