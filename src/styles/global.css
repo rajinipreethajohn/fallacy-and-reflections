@@ -5,6 +5,56 @@ canvas {
   display: block;
 }
 
+/* Brief onboarding pulse for joystick discoverability on mobile and iPad */
+.joystick-discoverable {
+  animation: joystickPulse 1.2s ease-in-out 3;
+}
+
+.joystick-thumb-discoverable {
+  animation: joystickThumbPulse 1.2s ease-in-out 3;
+}
+
+@keyframes joystickPulse {
+  0% {
+    transform: scale(1);
+    box-shadow:
+      0 0 22px rgba(255, 255, 255, 0.25),
+      0 0 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 30px rgba(255, 255, 255, 0.38),
+      0 0 46px rgba(255, 255, 255, 0.18);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 22px rgba(255, 255, 255, 0.25),
+      0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes joystickThumbPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    background: rgba(255, 255, 255, 0.42);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.22);
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.55);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    background: rgba(255, 255, 255, 0.42);
+  }
+}
+
 /* Artwork metadata panel — museum-style typography */
 .info-panel {
   position: fixed;
@@ -714,7 +764,7 @@ canvas {
 }
 
 /* Shared mobile museum controls */
-@media (max-width: 1024px) {
+@media (pointer: coarse) {
   .museum-mobile-control {
     position: fixed !important;
     top: calc(28px + env(safe-area-inset-top, 0px)) !important;

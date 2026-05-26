@@ -128,6 +128,27 @@ function showReturnHomeButton() {
   }, 4200);
 }
 
+function showMobileJoystick(joystick, joystickThumb) {
+  if (!joystick) return;
+
+  window.setTimeout(() => {
+    joystick.style.opacity = "1";
+    joystick.style.pointerEvents = "auto";
+
+    // Brief onboarding pulse for discoverability.
+    // CSS animation classes are added in global.css next.
+    if (joystickThumb) {
+      joystick.classList.add("joystick-discoverable");
+      joystickThumb.classList.add("joystick-thumb-discoverable");
+
+      window.setTimeout(() => {
+        joystick.classList.remove("joystick-discoverable");
+        joystickThumb.classList.remove("joystick-thumb-discoverable");
+      }, 4200);
+    }
+  }, 1200);
+}
+
 function returnToEntrance(event) {
   event.preventDefault();
   event.stopPropagation();
@@ -313,7 +334,9 @@ if (isMobile) {
   joystick.style.boxShadow = "0 0 22px rgba(255,255,255,0.25)";
   joystick.style.touchAction = "none";
   joystick.style.zIndex = "9999";
-  joystick.style.pointerEvents = "auto";
+  joystick.style.opacity = "0";
+  joystick.style.pointerEvents = "none";
+  joystick.style.transition = "opacity 0.8s ease";
 
   const joystickThumb = document.createElement("div");
   joystickThumb.style.position = "absolute";
@@ -337,6 +360,24 @@ if (isMobile) {
     width: window.innerWidth,
     height: window.innerHeight,
   });
+
+  if (startButton) {
+    startButton.addEventListener(
+      "click",
+      () => {
+        showMobileJoystick(joystick, joystickThumb);
+      },
+      { once: true },
+    );
+
+    startButton.addEventListener(
+      "touchstart",
+      () => {
+        showMobileJoystick(joystick, joystickThumb);
+      },
+      { once: true, passive: true },
+    );
+  }
 
   let joystickActive = false;
   let moveX = 0,
