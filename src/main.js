@@ -75,6 +75,72 @@ document.body.appendChild(renderer.domElement);
 // ✨ Show signature after entering the gallery
 const startButton = document.getElementById("start-button");
 
+const returnHomeButton = document.createElement("button");
+returnHomeButton.type = "button";
+returnHomeButton.id = "return-home-button";
+returnHomeButton.classList.add("museum-mobile-control");
+returnHomeButton.setAttribute(
+  "aria-label",
+  isMobile ? "Return to home" : "Return to entrance",
+);
+returnHomeButton.textContent = isMobile ? "‹" : "← Return to Entrance";
+
+returnHomeButton.style.position = "fixed";
+returnHomeButton.style.zIndex = "9998";
+returnHomeButton.style.border = "1px solid rgba(245,241,234,0.18)";
+returnHomeButton.style.background = "rgba(8,8,8,0.28)";
+returnHomeButton.style.color = "rgba(245,241,234,0.72)";
+returnHomeButton.style.backdropFilter = "blur(12px)";
+returnHomeButton.style.webkitBackdropFilter = "blur(12px)";
+returnHomeButton.style.boxShadow = "0 14px 40px rgba(0,0,0,0.18)";
+returnHomeButton.style.cursor = "pointer";
+returnHomeButton.style.opacity = "0";
+returnHomeButton.style.pointerEvents = "none";
+returnHomeButton.style.transition =
+  "opacity 0.6s ease, color 0.3s ease, background 0.3s ease";
+
+if (isMobile) {
+  // Mobile styles handled globally in CSS
+} else {
+  returnHomeButton.style.right = "32px";
+  returnHomeButton.style.bottom = "28px";
+  returnHomeButton.style.borderRadius = "999px";
+  returnHomeButton.style.padding = "10px 16px";
+  returnHomeButton.style.fontFamily = "Cormorant Garamond, serif";
+  returnHomeButton.style.fontSize = "1rem";
+  returnHomeButton.style.letterSpacing = "0.08em";
+}
+
+returnHomeButton.addEventListener("mouseenter", () => {
+  returnHomeButton.style.color = "rgba(245,241,234,0.96)";
+  returnHomeButton.style.background = "rgba(8,8,8,0.42)";
+});
+
+returnHomeButton.addEventListener("mouseleave", () => {
+  returnHomeButton.style.color = "rgba(245,241,234,0.72)";
+  returnHomeButton.style.background = "rgba(8,8,8,0.28)";
+});
+
+function showReturnHomeButton() {
+  window.setTimeout(() => {
+    returnHomeButton.style.opacity = "1";
+    returnHomeButton.style.pointerEvents = "auto";
+  }, 4200);
+}
+
+function returnToEntrance(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  window.location.reload();
+}
+
+returnHomeButton.addEventListener("click", returnToEntrance);
+returnHomeButton.addEventListener("touchstart", returnToEntrance, {
+  passive: false,
+});
+
+document.body.appendChild(returnHomeButton);
+
 function unlockMobileAudio() {
   const audioElements = document.querySelectorAll("audio");
 
@@ -103,17 +169,32 @@ function unlockMobileAudio() {
 if (startButton) {
   startButton.addEventListener("click", () => {
     unlockMobileAudio(); // fade in 2s after entry
+    showReturnHomeButton();
   });
 
-  startButton.addEventListener("touchstart", unlockMobileAudio, {
-    once: true,
-    passive: true,
-  });
+  startButton.addEventListener(
+    "touchstart",
+    () => {
+      unlockMobileAudio();
+      showReturnHomeButton();
+    },
+    {
+      once: true,
+      passive: true,
+    },
+  );
 
-  startButton.addEventListener("touchend", unlockMobileAudio, {
-    once: true,
-    passive: true,
-  });
+  startButton.addEventListener(
+    "touchend",
+    () => {
+      unlockMobileAudio();
+      showReturnHomeButton();
+    },
+    {
+      once: true,
+      passive: true,
+    },
+  );
 }
 
 // ✅ Prevent pull-to-refresh / overscroll on mobile browsers
