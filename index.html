@@ -630,6 +630,8 @@
             panel.classList.remove("is-open");
             panel.setAttribute("aria-hidden", "true");
           });
+          document.body.classList.remove("cultural-panel-open");
+          if (isMobile) document.body.style.touchAction = "none";
         }
 
         function openPanel(panelId, event) {
@@ -653,6 +655,8 @@
 
           panel.classList.add("is-open");
           panel.setAttribute("aria-hidden", "false");
+          document.body.classList.add("cultural-panel-open");
+          if (isMobile) document.body.style.touchAction = "auto";
         }
 
         panelOpeners.forEach((opener) => {

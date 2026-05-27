@@ -231,6 +231,7 @@ if (isMobile) {
       // Allow pinch zoom but block one-finger drags
       if (event.touches.length > 1 || (event.scale && event.scale !== 1))
         return;
+      if (event.target.closest?.(".cultural-panel")) return;
       event.preventDefault();
     },
     { passive: false },
@@ -244,9 +245,12 @@ let lookTouchY = 0;
 function isInteractiveOverlay(target) {
   return Boolean(
     target.closest?.(".joystick-control") ||
-    target.closest?.("#artwork-info") ||
-    target.closest?.("button") ||
-    target.closest?.("a"),
+      target.closest?.(".cultural-panel") ||
+      target.closest?.("#artwork-info") ||
+      target.closest?.("button") ||
+      target.closest?.("a") ||
+      target.closest?.("input") ||
+      target.closest?.("textarea"),
   );
 }
 
@@ -267,6 +271,7 @@ function handleTouchStart(event) {
 
 function handleTouchMove(event) {
   if (!isMobile || activeLookTouchId === null) return;
+  if (document.body.classList.contains("cultural-panel-open")) return;
 
   const touch = getTouchById(event.touches, activeLookTouchId);
   if (!touch) return;
