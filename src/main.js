@@ -274,8 +274,8 @@ function handleTouchMove(event) {
   const dx = touch.clientX - lookTouchX;
   const dy = touch.clientY - lookTouchY;
 
-  // Roblox-style mobile look: drag right turns right, drag left turns left.
-  camera.rotation.y += dx * 0.0024;
+  // Drag direction follows the visitor's finger on touch devices.
+  camera.rotation.y -= dx * 0.0024;
   camera.rotation.x -= dy * 0.0024;
 
   lookTouchX = touch.clientX;
@@ -466,7 +466,7 @@ if (isMobile) {
       forward.normalize();
 
       const right = new THREE.Vector3();
-      right.crossVectors(camera.up, forward).normalize();
+      right.crossVectors(forward, camera.up).normalize();
 
       // Use joystick input to move in facing direction
       const nextPosition = camera.position.clone();
