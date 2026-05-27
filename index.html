@@ -511,8 +511,10 @@
         Close
       </button>
       <div class="cultural-panel__inner">
-        <p class="panel-kicker">Reach the Artist</p>
-        <h2 id="reach-title">Leave a letter in the quiet.</h2>
+        <div class="letter-intro" id="letter-intro">
+          <p class="panel-kicker">Reach the Artist</p>
+          <h2 id="reach-title">Leave a letter in the quiet.</h2>
+        </div>
         <form
           class="letter-form"
           id="stillhaus-letter-form"
@@ -559,7 +561,7 @@
           hidden
         >
           <p class="panel-kicker">Letter Received</p>
-          <h3>Your letter has entered the house.</h3>
+          <h3 tabindex="-1">Your letter has entered the house.</h3>
           <p>If a reply is meant to return, it will find its way back.</p>
           <button class="museum-action" type="button" data-panel-close>
             Return to StillHaus
@@ -645,6 +647,8 @@
             const submitButton = letterForm.querySelector("[type='submit']");
             submitButton.disabled = false;
             submitButton.textContent = "Send Letter";
+
+            document.getElementById("letter-intro")?.removeAttribute("hidden");
           }
 
           panel.classList.add("is-open");
@@ -697,7 +701,13 @@
 
               letterForm.hidden = true;
               letterThankYou.hidden = false;
+              document.getElementById("letter-intro")?.setAttribute("hidden", "");
               letterForm.reset();
+              letterThankYou.scrollIntoView({
+                block: "center",
+                behavior: "smooth",
+              });
+              letterThankYou.querySelector("h3")?.focus?.();
             } catch (error) {
               submitButton.disabled = false;
               submitButton.textContent = "Send Letter";

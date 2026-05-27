@@ -233,6 +233,14 @@ body:not(.gallery-entered) #artwork-info {
   margin-top: clamp(28px, 5vw, 46px);
 }
 
+.letter-form[hidden] {
+  display: none;
+}
+
+.letter-intro[hidden] {
+  display: none;
+}
+
 .quiet-field {
   display: none;
 }
