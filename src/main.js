@@ -300,10 +300,6 @@ const clock = new THREE.Clock();
 // Disable pointer lock on mobile
 // Mobile controls (touch look + movement)
 if (isMobile) {
-  document.body.removeEventListener("click", () => {
-    controls.lock();
-  });
-
   // Look controls (already defined)
   document.body.addEventListener("touchstart", handleTouchStart, {
     passive: false,

@@ -8,12 +8,47 @@ const controls = new PointerLockControls(camera, document.body);
 // ✅ Ensure proper rotation order for clamping
 camera.rotation.order = 'YXZ';
 
-// Add click event to lock/unlock controls
-document.addEventListener('click', () => {
+function isTouchNavigationDevice() {
+  const userAgent = navigator.userAgent || '';
+  const isTraditionalMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      userAgent,
+    );
+
+  const isTouchCapable =
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0;
+
+  const prefersTouch =
+    window.matchMedia?.('(pointer: coarse)')?.matches ||
+    window.matchMedia?.('(hover: none)')?.matches;
+
+  return isTraditionalMobile || isTouchCapable || prefersTouch;
+}
+
+function isGalleryUi(target) {
+  return Boolean(
+    target.closest?.('button') ||
+      target.closest?.('a') ||
+      target.closest?.('input') ||
+      target.closest?.('textarea') ||
+      target.closest?.('.cultural-panel') ||
+      target.closest?.('#artwork-info') ||
+      target.closest?.('.joystick-control'),
+  );
+}
+
+function lockDesktopPointer(event) {
+  if (isTouchNavigationDevice() || isGalleryUi(event.target)) return;
+
   if (!controls.isLocked) {
     controls.lock();
   }
-});
+}
+
+// Desktop-only pointer lock. Touch devices use drag look + movement orb.
+document.addEventListener('click', lockDesktopPointer);
 
 // Movement controls
 const velocity = new THREE.Vector3();

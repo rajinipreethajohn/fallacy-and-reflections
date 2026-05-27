@@ -296,6 +296,7 @@ export class ArtworkManager {
 
   // Show artwork information panel
   showArtworkInfo(info) {
+    if (!document.body.classList.contains("gallery-entered")) return;
     if (!info || !this.infoPanel || !this.artworkDescription) return;
 
     if (this.artworkTitle) {
@@ -325,6 +326,11 @@ export class ArtworkManager {
 
   // Check for proximity to artworks and show info when close
   checkProximity() {
+    if (!document.body.classList.contains("gallery-entered")) {
+      this.hideArtworkInfo();
+      return;
+    }
+
     if (!this.camera) return;
 
     let closestDistance = Infinity;

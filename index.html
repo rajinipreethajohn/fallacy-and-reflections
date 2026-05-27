@@ -3,17 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fallacy & Reflections | RPJ Digital Collection</title>
+    <title>StillHaus | Digital Cultural Space</title>
 
     <meta
       name="description"
-      content="An immersive digital exhibition exploring duality, memory, reflection, and emotional space."
+      content="StillHaus is a quiet digital cultural space for reflective exhibitions, slow looking, and correspondence with the artist."
     />
 
-    <meta property="og:title" content="Fallacy & Reflections" />
+    <meta property="og:title" content="StillHaus" />
     <meta
       property="og:description"
-      content="An immersive digital exhibition exploring duality, memory, reflection, and emotional space."
+      content="A quiet digital cultural space for reflective exhibitions, slow looking, and correspondence with the artist."
     />
     <meta property="og:image" content="/social-preview.jpg" />
     <meta property="og:type" content="website" />
@@ -23,10 +23,10 @@
     />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Fallacy & Reflections" />
+    <meta name="twitter:title" content="StillHaus" />
     <meta
       name="twitter:description"
-      content="An immersive digital exhibition exploring duality, memory, reflection, and emotional space."
+      content="A quiet digital cultural space for reflective exhibitions, slow looking, and correspondence with the artist."
     />
     <meta name="twitter:image" content="/social-preview.jpg" />
 
@@ -408,14 +408,14 @@
 
   <body>
     <div id="loading-screen">
-      <h1>The Virtual Art Gallery</h1>
+      <h1>StillHaus</h1>
       <img
         src="./assets/images/signature.png"
         alt="Rajini Preetha John Signature"
         class="artist-signature"
       />
 
-      <div class="exhibition-kicker">Current Exhibition</div>
+      <div class="exhibition-kicker">Digital Cultural Space</div>
       <p class="exhibition-title">Fallacy &amp; Reflections — Summer 2026</p>
 
       <div id="rotating-line">Where silence becomes color.</div>
@@ -423,9 +423,26 @@
       <div id="loading-bar">
         <div id="loading-progress"></div>
       </div>
-      <button id="start-button">Enter Experience</button>
+      <button id="start-button">Enter Quietly</button>
 
-      <div id="gallery-footer">RPJ Digital Collection • 2026</div>
+      <nav class="entry-links" aria-label="StillHaus correspondence">
+        <button
+          class="entry-link museum-action"
+          type="button"
+          data-panel-open="about-panel"
+        >
+          About StillHaus
+        </button>
+        <button
+          class="entry-link museum-action"
+          type="button"
+          data-panel-open="reach-panel"
+        >
+          Reach the Artist
+        </button>
+      </nav>
+
+      <div id="gallery-footer">StillHaus • RPJ Digital Collection • 2026</div>
     </div>
 
     <button
@@ -441,6 +458,94 @@
       data-rpj-controls-help="true"
       aria-hidden="true"
     ></div>
+
+    <section
+      id="about-panel"
+      class="cultural-panel"
+      aria-hidden="true"
+      aria-labelledby="about-title"
+    >
+      <button
+        class="panel-close museum-action"
+        type="button"
+        aria-label="Close About StillHaus"
+        data-panel-close
+      >
+        Close
+      </button>
+      <div class="cultural-panel__inner">
+        <p class="panel-kicker">About StillHaus</p>
+        <h2 id="about-title">A room held between image, memory, and quiet attention.</h2>
+        <div class="panel-body">
+          <p>
+            StillHaus is a digital cultural space shaped for slow looking. It is
+            not built as a portfolio, archive, or spectacle, but as a restrained
+            environment where images can be approached as emotional architecture.
+          </p>
+          <p>
+            The work unfolds through atmosphere: dim thresholds, careful
+            typography, softened controls, and moments of discovery that ask for
+            patience rather than performance.
+          </p>
+          <p>
+            Each exhibition is treated as a temporary interior. Visitors move
+            through it as they might through a small museum after closing:
+            gently, privately, and with enough silence for the images to answer.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="reach-panel"
+      class="cultural-panel letter-panel"
+      aria-hidden="true"
+      aria-labelledby="reach-title"
+    >
+      <button
+        class="panel-close museum-action"
+        type="button"
+        aria-label="Close Reach the Artist"
+        data-panel-close
+      >
+        Close
+      </button>
+      <div class="cultural-panel__inner">
+        <p class="panel-kicker">Reach the Artist</p>
+        <h2 id="reach-title">Leave a letter in the quiet.</h2>
+        <form
+          class="letter-form"
+          method="post"
+          name="stillhaus-letter"
+          data-netlify="true"
+          netlify-honeypot="quiet-field"
+        >
+          <input type="hidden" name="form-name" value="stillhaus-letter" />
+          <p class="quiet-field">
+            <label>Leave this empty <input name="quiet-field" /></label>
+          </p>
+          <label>
+            <span>Your name</span>
+            <input name="name" autocomplete="name" />
+          </label>
+          <label>
+            <span>Where a reply may find you</span>
+            <input name="email" type="email" autocomplete="email" />
+          </label>
+          <label>
+            <span>Your letter</span>
+            <textarea
+              name="letter"
+              rows="7"
+              placeholder="Write as you would from a gallery bench after the room has gone quiet."
+            ></textarea>
+          </label>
+          <button class="museum-action letter-submit" type="submit">
+            Send Letter
+          </button>
+        </form>
+      </div>
+    </section>
 
     <div id="artwork-info">
       <h3 id="artwork-title">Artwork Title</h3>
@@ -473,19 +578,70 @@
 
         if (isMobile) {
           controlsHelp.innerHTML = `
-            Touch & Drag to look around<br>
-            Use glowing orb to move<br>
-            Approach artwork for details<br>
-            Release finger to stop
+            Drag the room gently<br>
+            Follow the lower glow<br>
+            Stand near a work<br>
+            Lift your hand to rest
           `;
         } else {
           controlsHelp.innerHTML = `
-            Click to start<br>
-            Move: W, A, S, D or Arrow Keys<br>
-            Look: Mouse<br>
-            Press ESC to exit movement
+            Click into the room<br>
+            Walk with keys<br>
+            Look with the mouse<br>
+            Escape returns your cursor
           `;
         }
+
+        const panels = Array.from(document.querySelectorAll(".cultural-panel"));
+        const panelOpeners = Array.from(
+          document.querySelectorAll("[data-panel-open]"),
+        );
+        const panelClosers = Array.from(
+          document.querySelectorAll("[data-panel-close]"),
+        );
+
+        function closePanels() {
+          panels.forEach((panel) => {
+            panel.classList.remove("is-open");
+            panel.setAttribute("aria-hidden", "true");
+          });
+        }
+
+        function openPanel(panelId, event) {
+          event?.preventDefault();
+          event?.stopPropagation();
+          closePanels();
+
+          const panel = document.getElementById(panelId);
+          if (!panel) return;
+
+          panel.classList.add("is-open");
+          panel.setAttribute("aria-hidden", "false");
+        }
+
+        panelOpeners.forEach((opener) => {
+          opener.addEventListener("click", (event) => {
+            openPanel(opener.dataset.panelOpen, event);
+          });
+        });
+
+        panelClosers.forEach((closer) => {
+          closer.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            closePanels();
+          });
+        });
+
+        panels.forEach((panel) => {
+          panel.addEventListener("click", (event) => {
+            if (event.target === panel) closePanels();
+          });
+        });
+
+        window.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") closePanels();
+        });
 
         let controlsHelpTimer;
 
@@ -563,6 +719,7 @@
         }, 200);
 
         startButton.addEventListener("click", () => {
+          document.body.classList.add("gallery-entered");
           loadingScreen.style.transition = "opacity 1s ease";
           loadingScreen.style.opacity = 0;
           setTimeout(() => loadingScreen.remove(), 1000);
