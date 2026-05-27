@@ -515,6 +515,7 @@
         <h2 id="reach-title">Leave a letter in the quiet.</h2>
         <form
           class="letter-form"
+          id="stillhaus-letter-form"
           method="post"
           name="stillhaus-letter"
           data-netlify="true"
@@ -525,18 +526,25 @@
             <label>Leave this empty <input name="quiet-field" /></label>
           </p>
           <label>
-            <span>Your name</span>
-            <input name="name" autocomplete="name" />
+            <span>How shall the artist address you?</span>
+            <input name="name" autocomplete="name" placeholder="Name" required />
           </label>
           <label>
-            <span>Where a reply may find you</span>
-            <input name="email" type="email" autocomplete="email" />
+            <span>Where the letter may find you again</span>
+            <input
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="Email"
+              required
+            />
           </label>
           <label>
             <span>Your letter</span>
             <textarea
               name="letter"
               rows="7"
+              required
               placeholder="Write as you would from a gallery bench after the room has gone quiet."
             ></textarea>
           </label>
@@ -544,6 +552,19 @@
             Send Letter
           </button>
         </form>
+        <div
+          class="letter-thank-you"
+          id="letter-thank-you"
+          aria-live="polite"
+          hidden
+        >
+          <p class="panel-kicker">Letter Received</p>
+          <h3>Your letter has entered the house.</h3>
+          <p>If a reply is meant to return, it will find its way back.</p>
+          <button class="museum-action" type="button" data-panel-close>
+            Return to StillHaus
+          </button>
+        </div>
       </div>
     </section>
 
@@ -593,6 +614,8 @@
         }
 
         const panels = Array.from(document.querySelectorAll(".cultural-panel"));
+        const letterForm = document.getElementById("stillhaus-letter-form");
+        const letterThankYou = document.getElementById("letter-thank-you");
         const panelOpeners = Array.from(
           document.querySelectorAll("[data-panel-open]"),
         );
@@ -614,6 +637,15 @@
 
           const panel = document.getElementById(panelId);
           if (!panel) return;
+
+          if (panelId === "reach-panel" && letterForm && letterThankYou) {
+            letterForm.hidden = false;
+            letterThankYou.hidden = true;
+
+            const submitButton = letterForm.querySelector("[type='submit']");
+            submitButton.disabled = false;
+            submitButton.textContent = "Send Letter";
+          }
 
           panel.classList.add("is-open");
           panel.setAttribute("aria-hidden", "false");
@@ -642,6 +674,37 @@
         window.addEventListener("keydown", (event) => {
           if (event.key === "Escape") closePanels();
         });
+
+        if (letterForm && letterThankYou) {
+          letterForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const submitButton = letterForm.querySelector("[type='submit']");
+            submitButton.disabled = true;
+            submitButton.textContent = "Sending";
+
+            const formData = new FormData(letterForm);
+            const encodedData = new URLSearchParams(formData).toString();
+
+            try {
+              await fetch("/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: encodedData,
+              });
+
+              letterForm.hidden = true;
+              letterThankYou.hidden = false;
+              letterForm.reset();
+            } catch (error) {
+              submitButton.disabled = false;
+              submitButton.textContent = "Send Letter";
+              letterForm.submit();
+            }
+          });
+        }
 
         let controlsHelpTimer;
 
