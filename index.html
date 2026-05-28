@@ -259,8 +259,33 @@
     #controls-help.is-open {
       display: block !important;
       opacity: 1;
+      pointer-events: auto;
       transform: translateY(0);
       visibility: visible;
+    }
+
+    .controls-help-link {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px 0 0;
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+      background: transparent;
+      color: rgba(245, 241, 234, 0.78);
+      font: inherit;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      line-height: 1.45;
+      text-align: left;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .controls-help-link:hover,
+    .controls-help-link:focus-visible {
+      color: rgba(245, 241, 234, 0.98);
+      outline: none;
     }
 
     @media (max-width: 768px) {
@@ -496,6 +521,7 @@
         <div class="exhibition-note">
           <p class="panel-kicker">Current Exhibition</p>
           <h3>Fallacy &amp; Reflections — Summer 2026</h3>
+          <p>A quiet room for digital dreams.</p>
           <p>
             This first room gathers faces, doubles, mirrors, and fragments of
             self-recognition. The works look back softly, asking what remains
@@ -508,6 +534,58 @@
             Reflection becomes the threshold where the imagined self and the
             remembered self briefly stand beside one another.
           </p>
+        </div>
+        <div class="next-room-note" id="next-room-invitation">
+          <p class="panel-kicker">Next Room Invitation</p>
+          <p>
+            Stillhaus changes in rooms. Receive a quiet note when the next room
+            opens.
+          </p>
+          <form
+            class="openings-form"
+            id="stillhaus-openings-form"
+            method="post"
+            name="stillhaus-openings"
+            data-netlify="true"
+          >
+            <input
+              type="hidden"
+              name="form-name"
+              value="stillhaus-openings"
+            />
+            <label>
+              <span class="sr-only">Email address</span>
+              <input
+                name="email"
+                type="email"
+                autocomplete="email"
+                placeholder="Email address"
+                required
+              />
+            </label>
+            <button class="museum-action openings-submit" type="submit">
+              Receive the next note
+            </button>
+          </form>
+          <p
+            class="openings-thank-you"
+            id="openings-thank-you"
+            aria-live="polite"
+            hidden
+          >
+            I&rsquo;ll send a quiet note when the next room opens.
+          </p>
+          <p class="artist-letter-prompt">
+            If something here stayed with you, you may also leave a letter for
+            the artist.
+          </p>
+          <button
+            class="museum-action openings-reach-link"
+            type="button"
+            data-panel-open="reach-panel"
+          >
+            Reach the Artist
+          </button>
         </div>
       </div>
     </section>
@@ -621,6 +699,9 @@
             Follow the lower glow<br>
             Stand near a work<br>
             Lift your hand to rest
+            <button class="controls-help-link" type="button" data-open-next-room>
+              Receive a note when the next room opens
+            </button>
           `;
         } else {
           controlsHelp.innerHTML = `
@@ -628,12 +709,17 @@
             Walk with keys<br>
             Look with the mouse<br>
             Escape returns your cursor
+            <button class="controls-help-link" type="button" data-open-next-room>
+              Receive a note when the next room opens
+            </button>
           `;
         }
 
         const panels = Array.from(document.querySelectorAll(".cultural-panel"));
         const letterForm = document.getElementById("stillhaus-letter-form");
         const letterThankYou = document.getElementById("letter-thank-you");
+        const openingsForm = document.getElementById("stillhaus-openings-form");
+        const openingsThankYou = document.getElementById("openings-thank-you");
         const panelOpeners = Array.from(
           document.querySelectorAll("[data-panel-open]"),
         );
@@ -699,6 +785,37 @@
           if (event.key === "Escape") closePanels();
         });
 
+        if (openingsForm && openingsThankYou) {
+          openingsForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const submitButton = openingsForm.querySelector("[type='submit']");
+            submitButton.disabled = true;
+            submitButton.textContent = "Sending";
+
+            const formData = new FormData(openingsForm);
+            const encodedData = new URLSearchParams(formData).toString();
+
+            try {
+              await fetch("/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: encodedData,
+              });
+
+              openingsForm.reset();
+              openingsForm.hidden = true;
+              openingsThankYou.hidden = false;
+            } catch (error) {
+              submitButton.disabled = false;
+              submitButton.textContent = "Receive the next note";
+              openingsForm.submit();
+            }
+          });
+        }
+
         if (letterForm && letterThankYou) {
           letterForm.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -753,6 +870,20 @@
           clearTimeout(controlsHelpTimer);
         }
 
+        function openNextRoomInvitation(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation?.();
+          closeControlsHelp();
+          openPanel("about-panel", event);
+          requestAnimationFrame(() => {
+            document.getElementById("next-room-invitation")?.scrollIntoView({
+              block: "center",
+              behavior: "smooth",
+            });
+          });
+        }
+
         function toggleControlsHelp(event) {
           event.preventDefault();
           event.stopPropagation();
@@ -779,6 +910,10 @@
         controlsToggle.addEventListener("mousedown", blockControlsClick, true);
         controlsToggle.addEventListener("click", blockControlsClick, true);
         controlsToggle.addEventListener("touchend", blockControlsClick, true);
+
+        controlsHelp
+          .querySelector("[data-open-next-room]")
+          ?.addEventListener("click", openNextRoomInvitation);
 
         const poeticLines = [
           "Where silence becomes color.",
