@@ -91,7 +91,8 @@ body.gallery-entered .museum-desktop-control {
 }
 
 body:not(.gallery-entered) #controls-toggle,
-body:not(.gallery-entered) #artwork-info {
+body:not(.gallery-entered) #artwork-info,
+body:not(.gallery-entered) #exhibition-end-plaque {
   display: none !important;
 }
 
@@ -459,6 +460,106 @@ body:not(.gallery-entered) #artwork-info {
   justify-self: start;
   margin-top: 8px;
   padding: 12px 17px;
+}
+
+.exhibition-end-plaque {
+  position: fixed;
+  right: 32px;
+  bottom: 96px;
+  z-index: 1001;
+  width: min(410px, calc(100vw - 48px));
+  padding: 18px 20px;
+  border: 1px solid rgba(245, 241, 234, 0.12);
+  border-radius: 8px;
+  background: rgba(8, 8, 8, 0.58);
+  color: var(--museum-ink);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px);
+  transition:
+    opacity 0.85s ease,
+    transform 0.85s ease;
+}
+
+.exhibition-end-plaque.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.exhibition-end-plaque h2 {
+  margin: 0 0 14px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 2rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1;
+  color: rgba(245, 241, 234, 0.96);
+}
+
+.exhibition-end-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(245, 241, 234, 0.14);
+  border-radius: 50%;
+  background: rgba(8, 8, 8, 0.18);
+  color: rgba(245, 241, 234, 0.66);
+  font-family:
+    "Nunito Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 1.1rem;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.exhibition-end-close:hover,
+.exhibition-end-close:focus-visible {
+  border-color: rgba(245, 241, 234, 0.28);
+  background: rgba(8, 8, 8, 0.36);
+  color: rgba(245, 241, 234, 0.94);
+  outline: none;
+}
+
+.exhibition-end-plaque p:not(.panel-kicker) {
+  margin: 0 0 9px;
+  font-family:
+    "Nunito Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 0.88rem;
+  font-weight: 300;
+  letter-spacing: 0.035em;
+  line-height: 1.65;
+  color: rgba(245, 241, 234, 0.72);
+}
+
+.exhibition-end-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.exhibition-end-actions .museum-action {
+  padding: 11px 14px;
 }
 
 /* Brief onboarding pulse for joystick discoverability on mobile and iPad */
@@ -1070,13 +1171,19 @@ canvas {
 
 /* Final museum typography overrides for actual artwork metadata IDs */
 #artwork-title {
-  margin: 0 0 4px !important;
-  font-family: "Cormorant Garamond", Georgia, serif !important;
-  font-size: 1.7rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.03em !important;
-  line-height: 1.1 !important;
-  color: rgba(248, 244, 236, 0.96) !important;
+  margin: 0 0 8px !important;
+  font-family:
+    "Nunito Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif !important;
+  font-size: 0.68rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.22em !important;
+  line-height: 1.4 !important;
+  text-transform: uppercase !important;
+  color: rgba(214, 202, 180, 0.68) !important;
   text-rendering: optimizeLegibility;
 }
 
@@ -1150,6 +1257,56 @@ canvas {
   z-index: 1;
 }
 
+.plaque-wayfinding-cue {
+  position: absolute !important;
+  top: 50%;
+  right: -46px;
+  z-index: 2 !important;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) translateX(-8px);
+  transition:
+    opacity 0.65s ease,
+    transform 0.65s ease;
+}
+
+.plaque-wayfinding-cue.is-visible {
+  opacity: 0.72;
+  transform: translateY(-50%) translateX(0);
+  animation: plaqueCueBreath 1.9s ease-in-out infinite;
+}
+
+.plaque-wayfinding-cue.is-left {
+  right: auto;
+  left: -46px;
+  transform: translateY(-50%) translateX(8px) rotate(180deg);
+}
+
+.plaque-wayfinding-cue.is-left.is-visible {
+  transform: translateY(-50%) translateX(0) rotate(180deg);
+}
+
+.plaque-wayfinding-cue span {
+  width: 15px;
+  height: 15px;
+  border-top: 2px solid rgba(245, 241, 234, 0.58);
+  border-right: 2px solid rgba(245, 241, 234, 0.58);
+  transform: rotate(45deg);
+  filter: drop-shadow(0 0 8px rgba(245, 241, 234, 0.28));
+}
+
+@keyframes plaqueCueBreath {
+  0%,
+  100% {
+    opacity: 0.42;
+  }
+  50% {
+    opacity: 0.86;
+  }
+}
+
 @media (max-width: 768px) {
   #artwork-info {
     left: auto !important;
@@ -1173,6 +1330,48 @@ canvas {
   #artwork-info.expanded #artwork-description {
     -webkit-line-clamp: unset;
     overflow: visible !important;
+  }
+
+  .plaque-wayfinding-cue {
+    top: auto;
+    right: 18px;
+    bottom: -32px;
+    transform: translateY(0) translateX(-8px);
+  }
+
+  .plaque-wayfinding-cue.is-visible {
+    transform: translateY(0) translateX(0);
+  }
+
+  .plaque-wayfinding-cue.is-left {
+    left: 18px;
+    right: auto;
+    transform: translateY(0) translateX(8px) rotate(180deg);
+  }
+
+  .plaque-wayfinding-cue.is-left.is-visible {
+    transform: translateY(0) translateX(0) rotate(180deg);
+  }
+
+  .exhibition-end-plaque {
+    right: 14px;
+    left: 14px;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    padding: 16px;
+  }
+
+  .exhibition-end-plaque h2 {
+    font-size: 1.65rem;
+  }
+
+  .exhibition-end-actions {
+    display: grid;
+  }
+
+  .exhibition-end-actions .museum-action {
+    width: 100%;
+    line-height: 1.35;
   }
 }
 

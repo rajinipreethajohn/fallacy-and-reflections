@@ -178,6 +178,9 @@ function addArtwork(artworkManager) {
       metadata: {
         title: "",
         artist: "",
+        sequence: "V / V",
+        sequenceIndex: 5,
+        isFinalArtwork: true,
         description:
           "She gazes through the golden circle and finds a stranger wearing her own face — half shadow, half light, one eye open to what was, the other closed to what will never be.",
         year: "",
@@ -193,6 +196,8 @@ function addArtwork(artworkManager) {
       metadata: {
         title: "",
         artist: "",
+        sequence: "III / V",
+        sequenceIndex: 3,
         description:
           "Between the gilded frame and the mosaic world behind her, she speaks without words to the one who knows all her secret names. The orbs in her hair are planets she has swallowed.",
         year: "",
@@ -208,6 +213,8 @@ function addArtwork(artworkManager) {
       metadata: {
         title: "",
         artist: "",
+        sequence: "II / V",
+        sequenceIndex: 2,
         description:
           "From the deep spiral she was born. Her reflection unravels in golden waves, caught between the eye that sees and the abyss that watches back.",
         year: "",
@@ -223,6 +230,8 @@ function addArtwork(artworkManager) {
       metadata: {
         title: "",
         artist: "",
+        sequence: "IV / V",
+        sequenceIndex: 4,
         description:
           "She carries a garden of remembered lives upon her head, yet the glass shows only silence — a face unwritten, a self not yet spoken into being.",
         year: "",
@@ -238,6 +247,8 @@ function addArtwork(artworkManager) {
       metadata: {
         title: "",
         artist: "",
+        sequence: "I / V",
+        sequenceIndex: 1,
         description:
           "Born of the same starlight, they meet at the edge of the world that splits all things in two — not mirror and woman, but dream and dreamer, eternal and indivisible.",
         year: "",

@@ -14,6 +14,16 @@ export class ArtworkManager {
     this.artworkTitle = document.getElementById("artwork-title");
     this.artworkDescription = document.getElementById("artwork-description");
     this.artworkArtist = document.getElementById("artwork-artist");
+    this.plaqueCue = this.createPlaqueCue();
+    this.endDispatched = false;
+    this.viewedSequences = new Set();
+    this.totalSequenceCount = 5;
+    this.activeCueTargetIndex = null;
+    this.pendingCueTargetIndex = null;
+    this.plaqueCueTargetArtwork = null;
+    this.cueRevealTimer = null;
+    this.wayfindingCue = this.createWayfindingCue();
+    this.wallWayfindingCue = this.createWallWayfindingCue();
 
     // Setup event listeners
     document.addEventListener("mousemove", this.onMouseMove.bind(this));
@@ -38,8 +48,29 @@ export class ArtworkManager {
     );
   }
 
+  createPlaqueCue() {
+    if (!this.infoPanel) return null;
+
+    const cue = document.createElement("div");
+    cue.className = "plaque-wayfinding-cue";
+    cue.setAttribute("aria-hidden", "true");
+    cue.innerHTML = "<span></span><span></span>";
+    this.infoPanel.appendChild(cue);
+
+    return cue;
+  }
+
   // Add a new artwork to the collection
-  addArtwork(mesh, title, artist, description, year) {
+  addArtwork(
+    mesh,
+    title,
+    artist,
+    description,
+    year,
+    sequence,
+    sequenceIndex,
+    isFinalArtwork,
+  ) {
     this.artworks.push({
       mesh,
       info: {
@@ -47,6 +78,9 @@ export class ArtworkManager {
         artist,
         description,
         year,
+        sequence,
+        sequenceIndex,
+        isFinalArtwork,
       },
       originalMaterial: mesh.material.clone(),
     });
@@ -114,6 +148,9 @@ export class ArtworkManager {
           metadata.artist,
           metadata.description,
           metadata.year,
+          metadata.sequence,
+          metadata.sequenceIndex,
+          metadata.isFinalArtwork,
         );
 
         // Add frame if requested
@@ -234,6 +271,289 @@ export class ArtworkManager {
     return spotLight;
   }
 
+  createWayfindingCue() {
+    const cue = new THREE.Group();
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xf5e7c6,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+
+    const chevronShape = new THREE.Shape();
+    chevronShape.moveTo(-0.42, 0);
+    chevronShape.lineTo(0, 0.54);
+    chevronShape.lineTo(0.42, 0);
+    chevronShape.lineTo(0.26, 0);
+    chevronShape.lineTo(0, 0.32);
+    chevronShape.lineTo(-0.26, 0);
+    chevronShape.lineTo(-0.42, 0);
+
+    const geometry = new THREE.ShapeGeometry(chevronShape);
+
+    [0, 0.42].forEach((offset) => {
+      const chevron = new THREE.Mesh(geometry, material);
+      chevron.rotation.x = -Math.PI / 2;
+      chevron.position.z = offset;
+      cue.add(chevron);
+    });
+
+    cue.position.y = 0.035;
+    cue.visible = false;
+    cue.userData.material = material;
+    this.scene.add(cue);
+
+    return cue;
+  }
+
+  createWallWayfindingCue() {
+    const cue = new THREE.Group();
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xf5e7c6,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+
+    const chevronShape = new THREE.Shape();
+    chevronShape.moveTo(-0.32, 0);
+    chevronShape.lineTo(0, 0.42);
+    chevronShape.lineTo(0.32, 0);
+    chevronShape.lineTo(0.2, 0);
+    chevronShape.lineTo(0, 0.25);
+    chevronShape.lineTo(-0.2, 0);
+    chevronShape.lineTo(-0.32, 0);
+
+    const geometry = new THREE.ShapeGeometry(chevronShape);
+
+    [0, 0.32].forEach((offset) => {
+      const chevron = new THREE.Mesh(geometry, material);
+      chevron.position.y = offset;
+      cue.add(chevron);
+    });
+
+    cue.visible = false;
+    cue.userData.material = material;
+    this.scene.add(cue);
+
+    return cue;
+  }
+
+  showWayfindingCue(fromArtwork, targetArtwork) {
+    if (!fromArtwork || !targetArtwork || !this.wayfindingCue) return;
+
+    const from = fromArtwork.mesh.position.clone();
+    const target = targetArtwork.mesh.position.clone();
+    const visitor = this.camera.position.clone();
+    from.y = 0;
+    target.y = 0;
+    visitor.y = 0;
+
+    const direction = target.sub(from);
+    if (direction.lengthSq() < 0.001) return;
+    direction.normalize();
+
+    const distanceFromArtwork = visitor.distanceTo(from);
+    const isCloseToArtwork = distanceFromArtwork < 3.2;
+    const isWallArtwork = fromArtwork.info.sequenceIndex !== 1;
+
+    if (isCloseToArtwork && isWallArtwork) {
+      this.showWallWayfindingCue(fromArtwork, targetArtwork);
+      this.showPlaqueCue(targetArtwork);
+      this.wayfindingCue.visible = false;
+      return;
+    }
+
+    if (this.wallWayfindingCue) {
+      this.wallWayfindingCue.visible = false;
+    }
+    this.showPlaqueCue(targetArtwork);
+
+    const cuePosition = isCloseToArtwork
+      ? visitor.addScaledVector(direction, 1.85)
+      : from.addScaledVector(direction, 2.2);
+
+    cuePosition.x = Math.max(-7.2, Math.min(7.2, cuePosition.x));
+    cuePosition.z = Math.max(-7.2, Math.min(7.2, cuePosition.z));
+    cuePosition.y = 0.035;
+
+    this.wayfindingCue.position.copy(cuePosition);
+    this.wayfindingCue.rotation.y = Math.atan2(-direction.x, -direction.z);
+    this.wayfindingCue.visible = true;
+    this.activeCueTargetIndex = targetArtwork.info.sequenceIndex;
+    this.pendingCueTargetIndex = null;
+  }
+
+  showPlaqueCue(targetArtwork) {
+    if (!this.plaqueCue || !targetArtwork) return;
+
+    this.plaqueCueTargetArtwork = targetArtwork;
+    const targetDirection = targetArtwork.mesh.position
+      .clone()
+      .sub(this.camera.position)
+      .applyQuaternion(this.camera.quaternion.clone().invert());
+    const directionClass = targetDirection.x < 0 ? "is-left" : "is-right";
+
+    this.plaqueCue.classList.remove("is-left", "is-right", "is-visible");
+    this.plaqueCue.classList.add(directionClass);
+    window.requestAnimationFrame(() => {
+      this.plaqueCue.classList.add("is-visible");
+    });
+  }
+
+  showCameraFloorCue(targetArtwork) {
+    if (!this.wayfindingCue || !targetArtwork) return;
+
+    const visitor = this.camera.position.clone();
+    const target = targetArtwork.mesh.position.clone();
+    visitor.y = 0;
+    target.y = 0;
+
+    const direction = target.sub(visitor);
+    if (direction.lengthSq() < 0.001) return;
+    direction.normalize();
+
+    const cuePosition = visitor.addScaledVector(direction, 2.05);
+    cuePosition.x = Math.max(-7.2, Math.min(7.2, cuePosition.x));
+    cuePosition.z = Math.max(-7.2, Math.min(7.2, cuePosition.z));
+    cuePosition.y = 0.035;
+
+    this.wayfindingCue.position.copy(cuePosition);
+    this.wayfindingCue.rotation.y = Math.atan2(-direction.x, -direction.z);
+    this.wayfindingCue.visible = true;
+    this.activeCueTargetIndex = targetArtwork.info.sequenceIndex;
+  }
+
+  maybeHandOffPlaqueCue() {
+    if (!this.plaqueCue?.classList.contains("is-visible")) return;
+    if (!this.plaqueCueTargetArtwork) return;
+
+    const targetDirection = this.plaqueCueTargetArtwork.mesh.position
+      .clone()
+      .sub(this.camera.position)
+      .applyQuaternion(this.camera.quaternion.clone().invert());
+
+    const targetIsInView =
+      targetDirection.z < -0.2 &&
+      Math.abs(targetDirection.x) < Math.abs(targetDirection.z) * 0.92;
+
+    if (!targetIsInView) return;
+
+    this.plaqueCue.classList.remove("is-visible");
+    if (this.wallWayfindingCue) {
+      this.wallWayfindingCue.visible = false;
+    }
+    this.showCameraFloorCue(this.plaqueCueTargetArtwork);
+    this.plaqueCueTargetArtwork = null;
+  }
+
+  showWallWayfindingCue(fromArtwork, targetArtwork) {
+    if (!this.wallWayfindingCue) return;
+
+    const currentPosition = fromArtwork.mesh.position.clone();
+    const targetPosition = targetArtwork.mesh.position.clone();
+    const worldDirection = targetPosition.sub(currentPosition);
+    worldDirection.y = 0;
+
+    const localDirection = worldDirection
+      .clone()
+      .applyQuaternion(fromArtwork.mesh.quaternion.clone().invert());
+
+    const side = localDirection.x >= 0 ? 1 : -1;
+    const wallOffset = new THREE.Vector3(side * 1.1, -1.65, 0.08);
+    wallOffset.applyEuler(fromArtwork.mesh.rotation);
+
+    this.wallWayfindingCue.position.copy(currentPosition).add(wallOffset);
+    this.wallWayfindingCue.rotation.copy(fromArtwork.mesh.rotation);
+    this.wallWayfindingCue.children.forEach((chevron) => {
+      chevron.rotation.z = side > 0 ? -Math.PI / 2 : Math.PI / 2;
+    });
+    this.wallWayfindingCue.visible = true;
+    this.activeCueTargetIndex = targetArtwork.info.sequenceIndex;
+    this.pendingCueTargetIndex = null;
+  }
+
+  hideWayfindingCue() {
+    if (!this.wayfindingCue) return;
+    this.wayfindingCue.visible = false;
+    if (this.wallWayfindingCue) {
+      this.wallWayfindingCue.visible = false;
+    }
+    this.activeCueTargetIndex = null;
+    this.pendingCueTargetIndex = null;
+    this.plaqueCue?.classList.remove("is-visible");
+    this.plaqueCueTargetArtwork = null;
+    clearTimeout(this.cueRevealTimer);
+  }
+
+  findNextCueTarget(currentInfo) {
+    if (!currentInfo?.sequenceIndex) return null;
+
+    const orderedArtworks = [...this.artworks].sort(
+      (a, b) => (a.info.sequenceIndex || 0) - (b.info.sequenceIndex || 0),
+    );
+
+    const nextInSequence = orderedArtworks.find(
+      (artwork) => artwork.info.sequenceIndex === currentInfo.sequenceIndex + 1,
+    );
+
+    if (
+      nextInSequence &&
+      !this.viewedSequences.has(nextInSequence.info.sequenceIndex)
+    ) {
+      return nextInSequence;
+    }
+
+    return orderedArtworks.find(
+      (artwork) => !this.viewedSequences.has(artwork.info.sequenceIndex),
+    );
+  }
+
+  queueWayfindingCue(currentInfo) {
+    const currentArtwork = this.artworks.find(
+      (artwork) => artwork.info.sequenceIndex === currentInfo.sequenceIndex,
+    );
+    const targetArtwork = this.findNextCueTarget(currentInfo);
+
+    if (!currentArtwork || !targetArtwork) {
+      this.hideWayfindingCue();
+      return;
+    }
+
+    if (
+      this.activeCueTargetIndex === targetArtwork.info.sequenceIndex ||
+      this.pendingCueTargetIndex === targetArtwork.info.sequenceIndex
+    ) {
+      return;
+    }
+
+    clearTimeout(this.cueRevealTimer);
+    this.pendingCueTargetIndex = targetArtwork.info.sequenceIndex;
+    this.cueRevealTimer = window.setTimeout(() => {
+      this.showWayfindingCue(currentArtwork, targetArtwork);
+    }, 2200);
+  }
+
+  recordArtworkEncounter(info) {
+    if (!info?.sequenceIndex || this.endDispatched) return;
+
+    this.viewedSequences.add(info.sequenceIndex);
+
+    if (this.viewedSequences.size >= this.totalSequenceCount) {
+      this.endDispatched = true;
+      this.hideWayfindingCue();
+
+      window.setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("stillhaus:exhibition-end"));
+      }, 1600);
+      return;
+    }
+
+    this.queueWayfindingCue(info);
+  }
+
   // Handle mouse movement for hovering effect
   onMouseMove(event) {
     // Calculate mouse position in normalized device coordinates
@@ -300,7 +620,12 @@ export class ArtworkManager {
     if (!info || !this.infoPanel || !this.artworkDescription) return;
 
     if (this.artworkTitle) {
-      this.artworkTitle.style.display = "none";
+      if (info.sequence) {
+        this.artworkTitle.textContent = info.sequence;
+        this.artworkTitle.style.display = "block";
+      } else {
+        this.artworkTitle.style.display = "none";
+      }
     }
 
     if (this.artworkArtist) {
@@ -317,11 +642,14 @@ export class ArtworkManager {
     this.artworkDescription.style.visibility = "visible";
 
     this.infoPanel.style.display = "block";
+    this.recordArtworkEncounter(info);
   }
 
   // Hide artwork information panel
   hideArtworkInfo() {
     this.infoPanel.style.display = "none";
+    this.plaqueCue?.classList.remove("is-visible");
+    this.plaqueCueTargetArtwork = null;
   }
 
   // Check for proximity to artworks and show info when close
@@ -357,5 +685,16 @@ export class ArtworkManager {
   // Update function called each frame
   update() {
     this.checkProximity();
+    this.maybeHandOffPlaqueCue();
+
+    if (this.wayfindingCue?.visible) {
+      const opacity = 0.18 + Math.sin(performance.now() * 0.0024) * 0.08;
+      this.wayfindingCue.userData.material.opacity = opacity;
+    }
+
+    if (this.wallWayfindingCue?.visible) {
+      const opacity = 0.2 + Math.sin(performance.now() * 0.0024) * 0.09;
+      this.wallWayfindingCue.userData.material.opacity = opacity;
+    }
   }
 }
