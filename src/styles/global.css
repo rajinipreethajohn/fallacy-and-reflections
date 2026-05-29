@@ -504,12 +504,16 @@ body:not(.gallery-entered) #exhibition-end-plaque {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: 1px solid rgba(245, 241, 234, 0.14);
   border-radius: 50%;
   background: rgba(8, 8, 8, 0.18);
   color: rgba(245, 241, 234, 0.66);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family:
     "Nunito Sans",
     -apple-system,
@@ -522,6 +526,7 @@ body:not(.gallery-entered) #exhibition-end-plaque {
   cursor: pointer;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  touch-action: manipulation;
   transition:
     background 0.25s ease,
     color 0.25s ease,
