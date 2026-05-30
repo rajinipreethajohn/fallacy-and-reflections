@@ -264,6 +264,20 @@
       visibility: visible;
     }
 
+    .controls-help-list {
+      margin: 0;
+      padding-left: 1.05rem;
+    }
+
+    .controls-help-list li {
+      margin: 0 0 4px;
+      padding-left: 2px;
+    }
+
+    .controls-help-list li:last-child {
+      margin-bottom: 0;
+    }
+
     @media (max-width: 768px) {
       h1 {
         font-size: 2.1rem;
@@ -476,12 +490,15 @@
       </button>
       <div class="cultural-panel__inner">
         <p class="panel-kicker">About StillHaus</p>
-        <h2 id="about-title">A room held between image, memory, and quiet attention.</h2>
+        <h2 id="about-title">
+          A room held between image, memory, and quiet attention.
+        </h2>
         <div class="panel-body">
           <p>
             StillHaus is a digital cultural space shaped for slow looking. It is
             not built as a portfolio, archive, or spectacle, but as a restrained
-            environment where images can be approached as emotional architecture.
+            environment where images can be approached as emotional
+            architecture.
           </p>
           <p>
             The work unfolds through atmosphere: dim thresholds, careful
@@ -524,11 +541,7 @@
             name="stillhaus-openings"
             data-netlify="true"
           >
-            <input
-              type="hidden"
-              name="form-name"
-              value="stillhaus-openings"
-            />
+            <input type="hidden" name="form-name" value="stillhaus-openings" />
             <label>
               <span class="sr-only">Email address</span>
               <input
@@ -599,7 +612,12 @@
           </p>
           <label>
             <span>How shall the artist address you?</span>
-            <input name="name" autocomplete="name" placeholder="Name" required />
+            <input
+              name="name"
+              autocomplete="name"
+              placeholder="Name"
+              required
+            />
           </label>
           <label>
             <span>Where the letter may find you again</span>
@@ -706,17 +724,22 @@
 
         if (isMobile) {
           controlsHelp.innerHTML = `
-            Drag the room gently<br>
-            Follow the lower glow<br>
-            Stand near a work<br>
-            Lift your hand to rest
+            <ul class="controls-help-list">
+              <li>Drag the room gently with your finger</li>
+              <li>Place your finger on the glowing orb to move</li>
+              <li>Release your finger to pause and look</li>
+              <li>Follow the faint ›› toward the next work</li>
+            </ul>
           `;
         } else {
           controlsHelp.innerHTML = `
-            Click into the room<br>
-            Walk with keys<br>
-            Look with the mouse<br>
-            Escape returns your cursor
+            <ul class="controls-help-list">
+              <li>Click into the room</li>
+              <li>Walk with arrow keys or W A S D</li>
+              <li>Move your cursor to look around</li>
+              <li>Follow the faint ›› toward the next work</li>
+              <li>Press the Esc key to return your cursor</li>
+            </ul>
           `;
         }
 
@@ -843,7 +866,9 @@
 
               letterForm.hidden = true;
               letterThankYou.hidden = false;
-              document.getElementById("letter-intro")?.setAttribute("hidden", "");
+              document
+                .getElementById("letter-intro")
+                ?.setAttribute("hidden", "");
               letterForm.reset();
               letterThankYou.scrollIntoView({
                 block: "center",
