@@ -7,10 +7,10 @@ function setupAudio() {
   const sound = new THREE.Audio(listener);
   const audioLoader = new THREE.AudioLoader(loadingManager);
 
-  audioLoader.load("/assets/audio/ambient_music.mp3", function (buffer) {
+  audioLoader.load("/assets/audio/sleep.mp3", function (buffer) {
     sound.setBuffer(buffer);
     sound.setLoop(true);
-    sound.setVolume(0.5);
+    sound.setVolume(0.3);
 
     // Wait until loading screen is gone before adding the button
     const checkGalleryReady = setInterval(() => {
