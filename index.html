@@ -173,6 +173,19 @@
       animation: fadeIn 2.5s ease forwards 1.9s;
     }
 
+    .entry-hint {
+      position: relative;
+      z-index: 1;
+      margin: 12px 0 0;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 1rem;
+      font-style: italic;
+      letter-spacing: 0.04em;
+      color: rgba(245, 231, 198, 0.66);
+      opacity: 0;
+      animation: fadeIn 2.5s ease forwards 3.15s;
+    }
+
     #rotating-line {
       position: relative;
       z-index: 1;
@@ -448,6 +461,7 @@
         <div id="loading-progress"></div>
       </div>
       <button id="start-button">Enter Quietly</button>
+      <p class="entry-hint">Approach each work slowly. The room will answer.</p>
 
       <nav class="entry-links" aria-label="StillHaus correspondence">
         <button
@@ -523,18 +537,68 @@
         <div class="exhibition-note">
           <p class="panel-kicker">Current Exhibition</p>
           <h3>Fallacy &amp; Reflections — Summer 2026</h3>
-          <p>A quiet room for digital dreams.</p>
           <p>
-            This first room gathers faces, doubles, mirrors, and fragments of
-            self-recognition. The works look back softly, asking what remains
-            true when identity is seen through ornament, memory, disguise, and
-            light.
+            This first room begins with the self and moves toward reflection,
+            uncertainty, and non-duality.
           </p>
           <p>
-            Fallacy is not treated here as error, but as a veil: something the
-            mind creates in order to survive beauty, longing, and contradiction.
-            Reflection becomes the threshold where the imagined self and the
-            remembered self briefly stand beside one another.
+            The journey unfolds through six thresholds, drawing on Vedantic
+            philosophy: aham (I), bimba (there is me), pratibimba (there is my
+            reflection), māyā (the boundary becomes uncertain), sākṣī (witness:
+            which one is the source?), and advaita (non duality).
+          </p>
+          <p>
+            As visitors approach the works, ancient words rise briefly from the
+            floor. They are not labels for the artworks, but moments of passage.
+            The room asks the visitor to move slowly enough for meaning to
+            appear.
+          </p>
+        </div>
+        <div class="exhibition-note artist-note">
+          <p class="panel-kicker">About the Artist</p>
+          <h3>Rajini Preetha John</h3>
+          <p>
+            Rajini Preetha John is an interdisciplinary artist and machine
+            learning engineer whose practice moves between technology, language,
+            philosophy and lived experience, examining questions of identity,
+            perception, consciousness and the nature of what we call real.
+          </p>
+          <p>
+            Born in India and rooted in Kannada, her mother tongue, John grew up
+            within a multilingual cultural landscape shaped by Sanskrit as well
+            as Hindi, Tamil, Telugu and Malayalam. Her life later expanded
+            across countries and cultures, from India to China and Malaysia,
+            with an increasing connection to Germany. This movement between
+            languages and places has become part of the way she understands
+            identity itself: inherited and remembered, yet continually
+            translated, reflected and reconstructed.
+          </p>
+          <p>
+            Her work repeatedly returns to ideas rooted in Indian philosophical
+            traditions: <strong>bimba and pratibimba</strong> — image and
+            reflection; <strong>māyā</strong> — the instability of what appears
+            to be real; and <strong>Advaita</strong> — the possibility that the
+            distinction between observer and observed, self and other, may
+            ultimately dissolve.
+          </p>
+          <p>
+            John approaches these ideas not as doctrines to explain, but as
+            questions she continues to live with.
+          </p>
+          <p>
+            Alongside her artistic practice, she works with data science and
+            machine learning — systems concerned with patterns, models and
+            making meaning from complexity. Her artistic work occupies the
+            tension between what can be measured and what may resist measurement
+            altogether.
+          </p>
+          <p>
+            StillHaus is the evolving digital architecture in which these
+            strands converge.
+          </p>
+          <p>At the centre of her practice is a recurring question:</p>
+          <p class="artist-question">
+            <strong>How do we know what is real?</strong>
           </p>
         </div>
         <div class="next-room-note" id="next-room-invitation">
@@ -737,7 +801,7 @@
               <li>Drag the room gently with your finger</li>
               <li>Place your finger on the glowing orb to move</li>
               <li>Release your finger to pause and look</li>
-              <li>Follow the faint ›› toward the next work</li>
+              <li>Move slowly. Follow the faint light when it appears</li>
             </ul>
           `;
         } else {
@@ -746,7 +810,7 @@
               <li>Click into the room</li>
               <li>Walk with arrow keys or W A S D</li>
               <li>Move your cursor to look around</li>
-              <li>Follow the faint ›› toward the next work</li>
+              <li>Move slowly. Follow the faint light when it appears</li>
               <li>Press the Esc key to return your cursor</li>
             </ul>
           `;

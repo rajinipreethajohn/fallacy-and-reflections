@@ -1,6 +1,7 @@
 // Artwork.js - Handles artwork interactions in the virtual gallery
 
 import * as THREE from "three";
+import { WordTransitionManager } from "./WordTransition.js";
 
 export class ArtworkManager {
   constructor(scene, camera) {
@@ -24,6 +25,7 @@ export class ArtworkManager {
     this.cueRevealTimer = null;
     this.wayfindingCue = this.createWayfindingCue();
     this.wallWayfindingCue = this.createWallWayfindingCue();
+    this.wordTransitions = new WordTransitionManager(scene, camera);
 
     // Setup event listeners
     document.addEventListener("mousemove", this.onMouseMove.bind(this));
@@ -539,15 +541,24 @@ export class ArtworkManager {
   recordArtworkEncounter(info) {
     if (!info?.sequenceIndex || this.endDispatched) return;
 
+    const isFirstEncounter = !this.viewedSequences.has(info.sequenceIndex);
     this.viewedSequences.add(info.sequenceIndex);
+
+    if (isFirstEncounter) {
+      const currentArtwork = this.artworks.find(
+        (artwork) => artwork.info.sequenceIndex === info.sequenceIndex,
+      );
+      this.wordTransitions.showStage(info.sequenceIndex, currentArtwork?.mesh);
+    }
 
     if (this.viewedSequences.size >= this.totalSequenceCount) {
       this.endDispatched = true;
       this.hideWayfindingCue();
 
       window.setTimeout(() => {
+        this.wordTransitions.showStage(6);
         window.dispatchEvent(new CustomEvent("stillhaus:exhibition-end"));
-      }, 1600);
+      }, 2600);
       return;
     }
 
@@ -686,6 +697,7 @@ export class ArtworkManager {
   update() {
     this.checkProximity();
     this.maybeHandOffPlaqueCue();
+    this.wordTransitions.update();
 
     if (this.wayfindingCue?.visible) {
       const opacity = 0.18 + Math.sin(performance.now() * 0.0024) * 0.08;
