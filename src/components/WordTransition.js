@@ -24,12 +24,12 @@ const WORD_STAGES = {
   5: {
     script: "ಸಾಕ್ಷಿ",
     transliteration: "sākṣī",
-    meaning: "witness: which one is the source?",
+    meaning: "witness-consciousness",
   },
   6: {
     script: "ಅದ್ವೈತ",
     transliteration: "advaita",
-    meaning: "non duality",
+    meaning: "non-duality",
   },
 };
 
