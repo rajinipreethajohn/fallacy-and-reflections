@@ -48,12 +48,14 @@ export class WordTransitionManager {
       /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         userAgent,
       );
-    const isIPad =
-      /iPad/i.test(userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const isExplicitIPad = /iPad/i.test(userAgent);
+    const isIPadDesktopMode =
+      navigator.platform === "MacIntel" &&
+      navigator.maxTouchPoints > 1 &&
+      window.matchMedia?.("(pointer: coarse)")?.matches;
     const narrowPhoneViewport = window.innerWidth <= 767;
 
-    return isPhone || isIPad || narrowPhoneViewport;
+    return isPhone || isExplicitIPad || isIPadDesktopMode || narrowPhoneViewport;
   }
 
   showStage(stageIndex, artworkMesh = null) {

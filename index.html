@@ -26,10 +26,8 @@
     />
     <meta property="og:image" content="/social-preview.jpg" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://fallacy-and-reflections.netlify.app/"
-    />
+    <meta property="og:url" content="https://stillhaus.art/" />
+    <link rel="canonical" href="https://stillhaus.art/" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="StillHaus" />
@@ -286,6 +284,12 @@
       visibility: visible;
     }
 
+    body.cultural-panel-open #loading-screen > * {
+      opacity: 0 !important;
+      pointer-events: none;
+      transition: opacity 0.45s ease;
+    }
+
     .controls-help-list {
       margin: 0;
       padding-left: 1.05rem;
@@ -474,6 +478,13 @@
         <button
           class="entry-link museum-action"
           type="button"
+          data-panel-open="process-panel"
+        >
+          Process &amp; Map
+        </button>
+        <button
+          class="entry-link museum-action"
+          type="button"
           data-panel-open="reach-panel"
         >
           Reach the Artist
@@ -648,6 +659,156 @@
           >
             Reach the Artist
           </button>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="process-panel"
+      class="cultural-panel process-panel"
+      aria-hidden="true"
+      aria-labelledby="process-title"
+    >
+      <button
+        class="panel-close museum-action"
+        type="button"
+        aria-label="Close Process and Map"
+        data-panel-close
+      >
+        Close
+      </button>
+      <div class="cultural-panel__inner">
+        <p class="panel-kicker">Process &amp; Map</p>
+        <h2 id="process-title">
+          The room is built as a passage from self-image to non-duality.
+        </h2>
+        <div class="panel-body">
+          <p>
+            Fallacy &amp; Reflections began as a question rather than a fixed
+            answer: how does a self become visible, split into image and
+            reflection, and then lose the certainty that either one is original?
+            StillHaus holds that question as an explorable digital room.
+          </p>
+          <p>
+            The exhibition combines digital image-making, spatial sequencing,
+            code, language, and sound. Each artwork is placed as a threshold in
+            a quiet gallery, while Sanskrit and Kannada-rooted concepts rise
+            briefly through the visitor's movement. The text does not explain
+            the images from outside; it appears as part of the act of crossing.
+          </p>
+        </div>
+
+        <div class="exhibition-note">
+          <p class="panel-kicker">Layout Diagram</p>
+          <h3>Five works, six Vedantic thresholds</h3>
+          <div
+            class="process-map"
+            role="img"
+            aria-label="Diagram of the StillHaus room showing the first threshold at the center and four artworks around the gallery, moving from aham to advaita."
+          >
+            <div class="process-map__room">
+              <svg
+                class="process-map__advaita"
+                viewBox="0 0 100 100"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <defs>
+                  <path
+                    id="advaita-arc-top-left"
+                    d="M 15,36 A 42,42 0 0,1 31,15"
+                  />
+                  <path
+                    id="advaita-arc-top-right"
+                    d="M 69,15 A 42,42 0 0,1 85,36"
+                  />
+                  <path
+                    id="advaita-arc-bottom-right"
+                    d="M 85,64 A 42,42 0 0,1 69,85"
+                  />
+                  <path
+                    id="advaita-arc-bottom-left"
+                    d="M 31,85 A 42,42 0 0,1 15,64"
+                  />
+                </defs>
+                <circle cx="50" cy="50" r="42" />
+                <text>
+                  <textPath href="#advaita-arc-top-left" startOffset="50%">
+                    ADVAITA
+                  </textPath>
+                </text>
+                <text>
+                  <textPath href="#advaita-arc-top-right" startOffset="50%">
+                    NON-DUALITY
+                  </textPath>
+                </text>
+                <text>
+                  <textPath href="#advaita-arc-bottom-right" startOffset="50%">
+                    ADVAITA
+                  </textPath>
+                </text>
+                <text>
+                  <textPath href="#advaita-arc-bottom-left" startOffset="50%">
+                    NON-DUALITY
+                  </textPath>
+                </text>
+              </svg>
+              <div class="process-map__wall process-map__wall--top">
+                <span>II / V</span>
+                <small>bimba</small>
+              </div>
+              <div class="process-map__wall process-map__wall--right">
+                <span>III / V</span>
+                <small>pratibimba</small>
+              </div>
+              <div class="process-map__wall process-map__wall--bottom">
+                <span>IV / V</span>
+                <small>māyā</small>
+              </div>
+              <div class="process-map__wall process-map__wall--left">
+                <span>V / V</span>
+                <small>sākṣī</small>
+              </div>
+              <div class="process-map__center">
+                <small>I / V</small>
+                <span></span>
+                <em>aham</em>
+              </div>
+            </div>
+            <ol class="process-thresholds">
+              <li><span>aham</span><small>i/ me/ myself</small></li>
+              <li><span>bimba</span><small>source/ image</small></li>
+              <li><span>pratibimba</span><small>reflection</small></li>
+              <li><span>māyā</span><small>illusion</small></li>
+              <li><span>sākṣī</span><small>witness</small></li>
+              <li><span>advaita</span><small>non-duality</small></li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="exhibition-note">
+          <p class="panel-kicker">Technical Notes</p>
+          <h3>Medium, materials, dimensions, tools</h3>
+          <p>
+            Medium: interactive web-based digital installation and virtual
+            gallery. Materials: digital paintings, browser-rendered 3D space,
+            sound, typography, written narrative, and visitor interaction.
+            Dimensions: variable, responsive to screen and device. Tools:
+            Three.js, JavaScript, HTML, CSS, Vite, image editing, and web-hosted
+            deployment through Netlify on the StillHaus .ART domain.
+          </p>
+        </div>
+
+        <div class="exhibition-note">
+          <p class="panel-kicker">Authorship</p>
+          <h3>A self-authored digital cultural space</h3>
+          <p>
+            The conceptual structure, sequencing, writing, image selection,
+            visual atmosphere, and final digital architecture are authored by
+            Rajini Preetha John. Code and software are used as studio tools: not
+            to replace authorship, but to shape the conditions through which the
+            work can be entered, paced, and remembered.
+          </p>
         </div>
       </div>
     </section>
