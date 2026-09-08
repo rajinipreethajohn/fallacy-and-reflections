@@ -1780,10 +1780,17 @@ canvas {
 }
 
 @media (max-width: 768px) {
+  #loading-screen {
+    min-height: 100svh;
+    overflow-y: auto;
+    padding-bottom: max(18px, env(safe-area-inset-bottom));
+  }
+
   .entry-links {
     flex-wrap: wrap;
     gap: 10px;
     width: min(320px, calc(100% - 48px));
+    margin-top: 16px;
   }
 
   .entry-link {
@@ -1791,6 +1798,20 @@ canvas {
     padding: 10px 12px;
     font-size: 0.64rem;
     letter-spacing: 0.1em;
+  }
+
+  .entry-link:last-child {
+    flex-basis: 100%;
+  }
+
+  #gallery-footer {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    margin-top: 14px;
+    padding: 0 18px;
+    white-space: normal;
   }
 
   .cultural-panel {

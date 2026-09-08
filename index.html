@@ -314,6 +314,12 @@
     }
 
     @media (max-width: 768px) {
+      #loading-screen {
+        min-height: 100svh;
+        overflow-y: auto;
+        padding-bottom: max(18px, env(safe-area-inset-bottom));
+      }
+
       h1 {
         font-size: 2.1rem;
         line-height: 1.1;
@@ -355,9 +361,15 @@
       }
 
       #gallery-footer {
-        bottom: 42px;
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        margin-top: 14px;
+        padding: 0 18px;
         font-size: 0.62rem;
         letter-spacing: 1.2px;
+        white-space: normal;
       }
 
       #controls-toggle {
