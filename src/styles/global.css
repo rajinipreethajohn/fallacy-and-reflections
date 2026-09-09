@@ -1405,8 +1405,6 @@ body:not(.gallery-entered) #exhibition-end-plaque {
     margin-top: 1rem;
   }
 
-  /* ✅ Hide control instructions on desktop */
-  #controls-help,
   #instructions {
     display: none !important;
   }

@@ -1185,13 +1185,14 @@
         }
 
         let controlsHelpTimer;
+        let hasShownEntryControls = false;
 
-        function openControlsHelp() {
+        function openControlsHelp(duration = 5000) {
           controlsHelp.classList.add("is-open");
           controlsHelp.setAttribute("aria-hidden", "false");
           controlsToggle.setAttribute("aria-label", "Hide controls");
           clearTimeout(controlsHelpTimer);
-          controlsHelpTimer = setTimeout(closeControlsHelp, 5000);
+          controlsHelpTimer = setTimeout(closeControlsHelp, duration);
         }
 
         function closeControlsHelp() {
@@ -1298,6 +1299,10 @@
           loadingScreen.style.transition = "opacity 1s ease";
           loadingScreen.style.opacity = 0;
           setTimeout(() => loadingScreen.remove(), 1000);
+          if (!hasShownEntryControls) {
+            hasShownEntryControls = true;
+            setTimeout(() => openControlsHelp(8000), 1200);
+          }
         });
       });
     </script>
