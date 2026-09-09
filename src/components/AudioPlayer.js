@@ -7,7 +7,7 @@ function setupAudio() {
   const sound = new THREE.Audio(listener);
   const audioLoader = new THREE.AudioLoader(loadingManager);
 
-  audioLoader.load("/assets/audio/sleep.mp3", function (buffer) {
+  audioLoader.load("/assets/audio/sleep-128.m4a", function (buffer) {
     sound.setBuffer(buffer);
     sound.setLoop(true);
     sound.setVolume(0.3);

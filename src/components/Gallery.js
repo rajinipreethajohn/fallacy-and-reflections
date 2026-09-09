@@ -27,7 +27,9 @@ function createRoom() {
   scene.add(room);
 
   // Floor with texture
-  const floorTexture = textureLoader.load("/assets/textures/medieval_wood.jpg");
+  const floorTexture = textureLoader.load(
+    "/assets/textures/medieval_wood_2048.jpg",
+  );
   floorTexture.wrapS = THREE.RepeatWrapping;
   floorTexture.wrapT = THREE.RepeatWrapping;
   floorTexture.repeat.set(2, 2); // Reduced repeat
